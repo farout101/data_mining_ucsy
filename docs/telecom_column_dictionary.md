@@ -1,6 +1,7 @@
 # Telecom Dataset — Column Dictionary & Relationships
 
-Source: Company A historical telecom data (`telecom/Client.csv`, `telecom/Record.csv`)
+Source: Company A–style historical telecom data (`telecom/Client.csv`, `telecom/Record.csv`).  
+Download: [Kaggle — Telecom Customer Churn 100K cleaned records](https://www.kaggle.com/datasets/shenoudasafwat/telecom-customer-churn-100k-cleaned-records)
 
 ---
 

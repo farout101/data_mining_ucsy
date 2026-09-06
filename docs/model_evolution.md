@@ -216,14 +216,31 @@ Optional: threshold tuned on **train** F1 (not test) moved XGB accuracy@thr to ~
 
 ---
 
-## 8. How to reproduce
+## 8. Where the trained models live (on disk)
 
-1. Install deps (`scikit-learn`, `xgboost`, …) from [`requirements.txt`](requirements.txt).
-2. Run [`modeling.ipynb`](modeling.ipynb) top to bottom (includes Stage 1–2, then improvement section with XGB).
-3. Compare tables in the notebook with this document.
+Training originally ran only inside [`modeling.ipynb`](../modeling.ipynb) (in memory).  
+Saved artifacts are now in [`models/`](../models/):
+
+| Stage | File |
+|-------|------|
+| Before — Logistic Regression | [`before_logistic_regression_lean.joblib`](../models/before_logistic_regression_lean.joblib) |
+| Before — Random Forest (then-primary) | [`before_random_forest_lean.joblib`](../models/before_random_forest_lean.joblib) |
+| After — tuned XGBoost | [`after_xgboost_tuned_rich.joblib`](../models/after_xgboost_tuned_rich.joblib) |
+| **Final (alias of after)** | [`final_model.joblib`](../models/final_model.joblib) |
+
+See [`models/README.md`](../models/README.md) and [`models/manifest.json`](../models/manifest.json).
 
 ---
 
-## 9. One-paragraph summary for the assignment
+## 9. How to reproduce
+
+1. Install deps (`scikit-learn`, `xgboost`, …) from [`requirements.txt`](../requirements.txt).
+2. Run [`modeling.ipynb`](../modeling.ipynb) top to bottom (includes Stage 1–2, then improvement section with XGB).
+3. Compare tables in the notebook with this document.
+4. Load saved models from [`models/`](../models/) as in the models README.
+
+---
+
+## 10. One-paragraph summary for the assignment
 
 We first trained **logistic regression** on a lean EDA-driven feature set and obtained only ~**58%** accuracy (AUC ~0.61), which is barely above chance and confirmed that churn is not a linear problem. We therefore switched the primary approach to **Random Forest**, which lifted accuracy to ~**61%** and AUC to ~**0.67** on the same features, showing that non-linear interactions matter. Because ~61% still looked weak as a headline score, we **improved** the pipeline with richer engineered features and a **tuned XGBoost** model, reaching ~**63.3%** accuracy, AUC ~**0.69**, and **1.58×** lift in the top 10% risk segment. The dataset and ML approach are worthwhile as a **targeting** system, not as a near-perfect individual classifier; further huge accuracy jumps are limited by class overlap, not by forgetting to “try ML.”

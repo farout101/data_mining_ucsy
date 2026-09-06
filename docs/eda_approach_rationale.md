@@ -45,6 +45,13 @@ That order matters: if the join is wrong or missingness is extreme, later charts
 
 ## 1. Load both tables and join on `Customer_ID`
 
+That order matters: if the join is wrong or missingness is extreme, later charts are misleading.
+
+My reason / interpretation:
+
+…
+…
+
 ### Why this approach?
 
 `Client.csv` and `Record.csv` are designed as a **1:1 customer split**:
@@ -67,7 +74,7 @@ We also checked uniqueness and that both sides share the same ID set, so the mer
 
 ### Why this approach?
 
-Missingness decides whether a column is usable, needs imputation, or should be dropped. Telecom demographics often have high null rates; usage fields are usually denser. A side-by-side Client vs Record missing chart makes that asymmetry obvious.
+Missingness decides whether a column is usable, needs imputation, or should be dropped. Telecom demographics often have high null rates; usage fields are usually denser. A side-by-side Client vs Record missing chart Client vs Record missing chartmakes that asymmetry obvious.
 
 ![Missing values — Client vs Record](eda_figures/01_missing_values.png)
 

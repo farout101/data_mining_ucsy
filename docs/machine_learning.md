@@ -13,7 +13,8 @@ Related files:
 
 > **Status update:** The primary model is now **tuned XGBoost** (rich features).  
 > Full chronology (LogReg → RF → XGB), motivations, and score tables: [`model_evolution.md`](model_evolution.md).  
-> Final holdout accuracy ≈ **0.6327**; ROC-AUC ≈ **0.6889**; top-10% lift ≈ **1.58×**.
+> Final holdout accuracy ≈ **0.6327**; ROC-AUC ≈ **0.6889**; top-10% lift ≈ **1.58×**.  
+> **Saved models:** [`models/final_model.joblib`](../models/final_model.joblib) (after) · before-improvement files in [`models/`](../models/) — see [`models/README.md`](../models/README.md).
 
 ---
 

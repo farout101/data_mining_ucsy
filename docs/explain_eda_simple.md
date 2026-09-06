@@ -10,15 +10,47 @@ Related: [`main.ipynb`](main.ipynb) · [`telecom_column_dictionary.md`](telecom_
 
 Imagine a phone company (“Company A”) with **100,000 customers**.
 
-Some customers **keep** their plan.  
+Some customers **keep** their plan.
 Some customers **leave** (that’s called **churn**).
 
 We have two big spreadsheets about the same people:
 
-| File | Like… | What’s inside |
-|------|--------|----------------|
-| `Client.csv` | A customer **profile card** | Who they are, old usage history, phone age, area |
-| `Record.csv` | A recent **report card** | How they used the phone lately + did they leave? |
+| File           | Like…data_mining_ucsy
+Private
+￼
+Watch
+0
+ (0)
+Fork0 (0)
+￼
+￼
+Star0 (0)
+￼
+￼
+main
+1 Branch
+0 Tags
+￼
+t
+T
+Add file￼
+Add file
+￼
+￼
+Code
+Latest commit
+￼
+farout101
+update
+5b9465c
+ ·
+last month
+History
+4 Commits
+Folders and files | What’s inside                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `Client.csv` | A customer**profile card**                                                                                                                                                                                                       | Who they are, old usage history, phone age, area |
+| `Record.csv` | A recent**report card**                                                                                                                                                                                                          | How they used the phone lately + did they leave? |
 
 We glue them together with `Customer_ID` (like a student ID). One ID → one person. No doubles. Nice and clean.
 
@@ -26,10 +58,10 @@ We glue them together with `Customer_ID` (like a student ID). One ID → one per
 
 ## What does “churn” mean here?
 
-**Churn = 1** means: they left about 1–2 months after we looked at their data.  
+**Churn = 1** means: they left about 1–2 months after we looked at their data.
 **Churn = 0** means: they stayed.
 
-In this homework dataset, about **half** leave and **half** stay.  
+In this homework dataset, about **half** leave and **half** stay.
 (Real phone companies usually have fewer people leaving. This set may be balanced on purpose for learning.)
 
 ---
@@ -74,8 +106,8 @@ Some boxes are empty.
 - Recent call/usage numbers → usually **filled in**
 - Home / income / cars → often **empty** (about 1 in 4 to 1 in 2 people)
 
-**Simple idea:**  
-The phone company knows how you *use* the phone.  
+**Simple idea:**
+The phone company knows how you *use* the phone.
 It doesn’t always know your *house and salary*.
 
 So for stories and models, we trust usage more than “number of cars.”
@@ -98,14 +130,14 @@ Imagine two thermometers in the same room:
 
 “How many minutes someone talks” is written in **many** columns:
 
-| Name style | What it roughly means |
-|------------|------------------------|
-| `mou_Mean` | Minutes lately (recent average) |
-| `avg3mou` | Minutes over the last ~3 months |
-| `avg6mou` | Minutes over the last ~6 months |
-| `avgmou` / `totmou` | Long-time / lifetime minutes |
+| Name style              | What it roughly means           |
+| ----------------------- | ------------------------------- |
+| `mou_Mean`            | Minutes lately (recent average) |
+| `avg3mou`             | Minutes over the last ~3 months |
+| `avg6mou`             | Minutes over the last ~6 months |
+| `avgmou` / `totmou` | Long-time / lifetime minutes    |
 
-If someone talks a lot lately, they often talked a lot in the 3-month and 6-month views too.  
+If someone talks a lot lately, they often talked a lot in the 3-month and 6-month views too.
 Those numbers are **friends** — they say almost the same thing.
 
 **Revenue** works the same way (`rev_Mean`, `avgrev`, `totrev`, …).
@@ -122,13 +154,13 @@ Keeping *every* minutes column is like putting five identical apples in a fruit 
 
 Some columns are related but tell a **different** story:
 
-| Column | Simple meaning | Why it’s special |
-|--------|----------------|------------------|
-| `change_mou` | Did minutes go **up or down** lately? | Trajectory — not just “how much” |
-| `change_rev` | Did the bill go up or down? | Same idea for money |
-| `eqpdays` | How **old** is the phone? | Not minutes at all |
-| `drop_vce_Mean` | Calls that failed / dropped | Quality problems |
-| `custcare_Mean` | Calls to customer care | Frustration / help seeking |
+| Column            | Simple meaning                               | Why it’s special                   |
+| ----------------- | -------------------------------------------- | ----------------------------------- |
+| `change_mou`    | Did minutes go **up or down** lately? | Trajectory — not just “how much” |
+| `change_rev`    | Did the bill go up or down?                  | Same idea for money                 |
+| `eqpdays`       | How**old** is the phone?               | Not minutes at all                  |
+| `drop_vce_Mean` | Calls that failed / dropped                  | Quality problems                    |
+| `custcare_Mean` | Calls to customer care                       | Frustration / help seeking          |
 
 So:
 
@@ -141,9 +173,9 @@ So:
 
 People who **left** more often looked like:
 
-1. **Older phones** (`eqpdays` bigger)  
-2. **Cheaper phones** (`hnd_price` smaller)  
-3. **Fewer minutes** lately  
+1. **Older phones** (`eqpdays` bigger)
+2. **Cheaper phones** (`hnd_price` smaller)
+3. **Fewer minutes** lately
 4. **Minutes dropping** (`change_mou` more negative)
 
 These are clues for a company:
@@ -157,18 +189,18 @@ These are clues for a company:
 
 We also looked at groups:
 
-- Credit card on file? Spending limit flag? New phone user?  
+- Credit card on file? Spending limit flag? New phone user?
 - Which **city/area**?
 
-Some groups churn a bit more than others.  
+Some groups churn a bit more than others.
 That helps marketing pick *who* to call — not only a score.
 
 ---
 
 ## Geographic areas
 
-Places like New York, Chicago, Florida, etc.  
-National churn might be ~50%, but some areas sit a bit higher or lower.  
+Places like New York, Chicago, Florida, etc.
+National churn might be ~50%, but some areas sit a bit higher or lower.
 Useful for local campaigns or network checks.
 
 ---
@@ -202,16 +234,16 @@ If they matched in spirit, the join is believable. Good.
 
 ## Tiny glossary
 
-| Word | Kid-friendly meaning |
-|------|----------------------|
-| **Churn** | Customer leaves |
-| **MOU** | Minutes of use (talk/data time) |
-| **Revenue / MRC** | Money the company charges |
-| **Correlation** | Two things rise/fall together |
-| **Redundant** | Extra copy of the same idea |
-| **EDA** | Looking at data before modeling |
-| **Missing** | Empty cell |
-| **Outlier / heavy tail** | A few wild huge/small numbers |
+| Word                           | Kid-friendly meaning            |
+| ------------------------------ | ------------------------------- |
+| **Churn**                | Customer leaves                 |
+| **MOU**                  | Minutes of use (talk/data time) |
+| **Revenue / MRC**        | Money the company charges       |
+| **Correlation**          | Two things rise/fall together   |
+| **Redundant**            | Extra copy of the same idea     |
+| **EDA**                  | Looking at data before modeling |
+| **Missing**              | Empty cell                      |
+| **Outlier / heavy tail** | A few wild huge/small numbers   |
 
 ---
 
