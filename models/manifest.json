@@ -1,0 +1,185 @@
+{
+  "split": {
+    "test_size": 0.2,
+    "stratify": true,
+    "random_state": 42
+  },
+  "before_improvement": {
+    "description": "Lean feature set baselines before richer FE / boosting",
+    "models": {
+      "before_logistic_regression_lean.joblib": {
+        "role": "Stage 1 baseline (linear)",
+        "metrics_test": {
+          "model": "logistic_regression_lean",
+          "accuracy": 0.58025,
+          "roc_auc": 0.6090064114565032
+        }
+      },
+      "before_random_forest_lean.joblib": {
+        "role": "Stage 2 primary before improvement",
+        "metrics_test": {
+          "model": "random_forest_lean",
+          "accuracy": 0.6133,
+          "roc_auc": 0.6658307319318808
+        }
+      },
+      "before_primary_random_forest_lean.joblib": {
+        "role": "Alias of before_random_forest_lean.joblib",
+        "metrics_test": {
+          "model": "random_forest_lean",
+          "accuracy": 0.6133,
+          "roc_auc": 0.6658307319318808
+        }
+      }
+    },
+    "lean_numeric": [
+      "eqpdays",
+      "hnd_price",
+      "phones",
+      "models",
+      "months",
+      "mou_Mean",
+      "rev_Mean",
+      "totmrc_Mean",
+      "change_mou",
+      "change_rev",
+      "avg3mou",
+      "drop_vce_Mean",
+      "custcare_Mean",
+      "ovrmou_Mean",
+      "ovrrev_Mean",
+      "mou_decline_flag",
+      "overage_ratio"
+    ],
+    "lean_categorical": [
+      "asl_flag",
+      "creditcd",
+      "new_cell",
+      "refurb_new",
+      "dualband",
+      "hnd_webcap",
+      "area",
+      "prizm_social_one"
+    ],
+    "clip_bounds": {
+      "change_mou": [
+        -841.2975,
+        748.7850000000035
+      ],
+      "change_rev": [
+        -104.828325,
+        121.34122500000042
+      ],
+      "overage_ratio": [
+        0.0,
+        3.907499903094004
+      ]
+    }
+  },
+  "after_improvement": {
+    "description": "Richer FE + tuned XGBoost (current final primary)",
+    "models": {
+      "after_xgboost_tuned_rich.joblib": {
+        "role": "Stage 3 improved primary",
+        "metrics_test": {
+          "model": "xgboost_tuned_rich",
+          "accuracy": 0.63265,
+          "roc_auc": 0.6889230452006203
+        }
+      },
+      "final_model.joblib": {
+        "role": "Alias of after_xgboost_tuned_rich.joblib (use this for deployment/demo)",
+        "metrics_test": {
+          "model": "xgboost_tuned_rich",
+          "accuracy": 0.63265,
+          "roc_auc": 0.6889230452006203
+        }
+      }
+    },
+    "rich_numeric": [
+      "eqpdays",
+      "hnd_price",
+      "phones",
+      "models",
+      "months",
+      "mou_Mean",
+      "rev_Mean",
+      "totmrc_Mean",
+      "change_mou",
+      "change_rev",
+      "avg3mou",
+      "avg6mou",
+      "avgrev",
+      "drop_vce_Mean",
+      "custcare_Mean",
+      "ovrmou_Mean",
+      "ovrrev_Mean",
+      "complete_Mean",
+      "attempt_Mean",
+      "roam_Mean",
+      "mou_decline_flag",
+      "overage_ratio",
+      "eqpdays_x_change_mou",
+      "mou_per_month",
+      "rev_per_mou",
+      "drop_rate",
+      "care_per_mou"
+    ],
+    "rich_categorical": [
+      "asl_flag",
+      "creditcd",
+      "new_cell",
+      "refurb_new",
+      "dualband",
+      "hnd_webcap",
+      "area",
+      "prizm_social_one",
+      "eqpdays_bin",
+      "marital",
+      "ethnic"
+    ],
+    "xgb_params": {
+      "subsample": 0.8,
+      "reg_lambda": 2.0,
+      "n_estimators": 600,
+      "min_child_weight": 1,
+      "max_depth": 7,
+      "learning_rate": 0.03,
+      "colsample_bytree": 0.7
+    },
+    "clip_bounds": {
+      "change_mou": [
+        -841.2975,
+        748.7850000000035
+      ],
+      "change_rev": [
+        -104.828325,
+        121.34122500000042
+      ],
+      "overage_ratio": [
+        0.0,
+        3.907499903094004
+      ],
+      "eqpdays_x_change_mou": [
+        -274060.265,
+        240631.18000000023
+      ],
+      "rev_per_mou": [
+        0.02795145015576471,
+        10000000.0
+      ],
+      "drop_rate": [
+        0.0,
+        0.1999999760480029
+      ],
+      "care_per_mou": [
+        0.0,
+        0.0424625634357158
+      ]
+    }
+  },
+  "how_to_load": {
+    "before_rf": "joblib.load('models/before_random_forest_lean.joblib')  # sklearn Pipeline",
+    "final": "joblib.load('models/final_model.joblib')  # XGBBundle with .predict_proba(X_df)"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "numeric_defaults": {
+    "eqpdays": 342.0,
+    "hnd_price": 99.98999023,
+    "phones": 1.0,
+    "models": 1.0,
+    "months": 16.0,
+    "mou_Mean": 355.5,
+    "rev_Mean": 48.195,
+    "totmrc_Mean": 44.99,
+    "change_mou": -6.25,
+    "change_rev": -0.315,
+    "avg3mou": 358.0,
+    "avg6mou": 363.0,
+    "avgrev": 49.89,
+    "drop_vce_Mean": 3.0,
+    "custcare_Mean": 0.0,
+    "ovrmou_Mean": 2.75,
+    "ovrrev_Mean": 1.0,
+    "complete_Mean": 76.0,
+    "attempt_Mean": 101.0,
+    "roam_Mean": 0.0
+  },
+  "categorical_options": {
+    "asl_flag": [
+      "N",
+      "Y"
+    ],
+    "creditcd": [
+      "Missing",
+      "N",
+      "Y"
+    ],
+    "new_cell": [
+      "N",
+      "U",
+      "Y"
+    ],
+    "refurb_new": [
+      "Missing",
+      "N",
+      "R"
+    ],
+    "dualband": [
+      "Missing",
+      "N",
+      "T",
+      "U",
+      "Y"
+    ],
+    "hnd_webcap": [
+      "Missing",
+      "UNKW",
+      "WC",
+      "WCMB"
+    ],
+    "area": [
+      "ATLANTIC SOUTH AREA",
+      "CALIFORNIA NORTH AREA",
+      "CENTRAL/SOUTH TEXAS AREA",
+      "CHICAGO AREA",
+      "DALLAS AREA",
+      "DC/MARYLAND/VIRGINIA AREA",
+      "GREAT LAKES AREA",
+      "HOUSTON AREA",
+      "LOS ANGELES AREA",
+      "MIDWEST AREA",
+      "Missing",
+      "NEW ENGLAND AREA",
+      "NEW YORK CITY AREA",
+      "NORTH FLORIDA AREA",
+      "NORTHWEST/ROCKY MOUNTAIN AREA",
+      "OHIO AREA",
+      "PHILADELPHIA AREA",
+      "SOUTH FLORIDA AREA",
+      "SOUTHWEST AREA",
+      "TENNESSEE AREA"
+    ],
+    "prizm_social_one": [
+      "C",
+      "Missing",
+      "R",
+      "S",
+      "T",
+      "U"
+    ],
+    "marital": [
+      "A",
+      "B",
+      "M",
+      "Missing",
+      "S",
+      "U"
+    ],
+    "ethnic": [
+      "B",
+      "C",
+      "D",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "M",
+      "Missing",
+      "N",
+      "O",
+      "P",
+      "R",
+      "S",
+      "U",
+      "X",
+      "Z"
+    ]
+  },
+  "categorical_defaults": {
+    "asl_flag": "N",
+    "creditcd": "Y",
+    "new_cell": "U",
+    "refurb_new": "N",
+    "dualband": "Y",
+    "hnd_webcap": "WCMB",
+    "area": "NEW YORK CITY AREA",
+    "prizm_social_one": "S",
+    "marital": "U",
+    "ethnic": "N"
+  }
+}

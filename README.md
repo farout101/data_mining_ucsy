@@ -8,16 +8,53 @@ University data-mining project: explore anonymized telecom customer data, engine
 
 ---
 
-## What’s in this repo
+## Project Structure
+
+```
+data_mining_ucsy/
+├── data/                    # Data directory
+│   └── telecom/            # Raw data files (gitignored)
+│       ├── Client.csv
+│       └── Record.csv
+├── notebooks/              # Jupyter notebooks
+│   ├── main.ipynb         # Exploratory data analysis (EDA)
+│   ├── modeling.ipynb     # Feature engineering + model training
+│   └── residue.ipynb      # EDA takeaways
+├── src/                    # Python source modules
+│   ├── __init__.py
+│   └── model_bundle.py    # Model bundler utilities
+├── models/                 # Saved trained models (gitignored)
+│   ├── final_model.joblib
+│   └── manifest.json
+├── streamlit_app/          # Streamlit UI application
+│   ├── app.py
+│   ├── model_bundle.py
+│   └── README.md
+├── config/                 # Configuration files
+│   └── ui_defaults.json
+├── docs/                   # Documentation
+├── eda_figures/            # Exported EDA plots
+├── tests/                  # Unit tests (optional)
+├── pyproject.toml         # Package configuration
+├── requirements.txt       # Python dependencies
+├── .gitignore            # Git ignore patterns
+└── .gitattributes        # Git attributes for file handling
+```
+
+---
+
+## What's in this repo
 
 | Path | Purpose |
 |------|---------|
-| [`main.ipynb`](main.ipynb) | Exploratory data analysis (EDA) |
-| [`modeling.ipynb`](modeling.ipynb) | Feature engineering + LogReg → RF → XGBoost |
-| [`residue.ipynb`](residue.ipynb) | Short EDA takeaways |
-| [`telecom/`](telecom/) | `Client.csv` + `Record.csv` (local data; often gitignored) |
+| [`notebooks/main.ipynb`](notebooks/main.ipynb) | Exploratory data analysis (EDA) |
+| [`notebooks/modeling.ipynb`](notebooks/modeling.ipynb) | Feature engineering + LogReg → RF → XGBoost |
+| [`notebooks/residue.ipynb`](notebooks/residue.ipynb) | Short EDA takeaways |
+| [`data/telecom/`](data/telecom/) | `Client.csv` + `Record.csv` (local data; gitignored) |
 | [`models/`](models/) | Saved trained models (`.joblib`) |
 | [`streamlit_app/`](streamlit_app/) | Churn prediction UI |
+| [`src/`](src/) | Reusable Python modules |
+| [`config/`](config/) | Configuration files |
 | [`docs/`](docs/) | Detailed write-ups (EDA, FE, ML, evolution, bundler, …) |
 | [`eda_figures/`](eda_figures/) | Exported EDA plots |
 | [`requirements.txt`](requirements.txt) | Python dependencies |
@@ -31,11 +68,11 @@ University data-mining project: explore anonymized telecom customer data, engine
 - **Label balance:** ~50/50 in this extract (convenient for accuracy; atypical vs many live carriers).
 - **Download:** [Telecom Customer Churn 100K — cleaned records (Kaggle)](https://www.kaggle.com/datasets/shenoudasafwat/telecom-customer-churn-100k-cleaned-records)
 
-Place the CSVs under `telecom/` as:
+Place the CSVs under `data/telecom/` as:
 
 ```text
-telecom/Client.csv
-telecom/Record.csv
+data/telecom/Client.csv
+data/telecom/Record.csv
 ```
 
 Column meanings: [`docs/telecom_column_dictionary.md`](docs/telecom_column_dictionary.md).
@@ -71,16 +108,20 @@ Details: [`models/README.md`](models/README.md) · bundler: [`docs/model_bundler
 # clone / enter repo
 cd data_mining_ucsy
 
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+
+# Or install as a package
+pip install -e .
 ```
 
 Place data at:
 
 ```text
-telecom/Client.csv
-telecom/Record.csv
+data/telecom/Client.csv
+data/telecom/Record.csv
 ```
 
 Dataset download (Kaggle):  
@@ -89,8 +130,8 @@ https://www.kaggle.com/datasets/shenoudasafwat/telecom-customer-churn-100k-clean
 ### Run notebooks
 
 ```bash
-jupyter notebook main.ipynb      # EDA
-jupyter notebook modeling.ipynb  # FE + training
+jupyter notebook notebooks/main.ipynb      # EDA
+jupyter notebook notebooks/modeling.ipynb  # FE + training
 ```
 
 ### Run Streamlit demo
@@ -108,7 +149,7 @@ import sys
 from pathlib import Path
 import joblib
 
-sys.path.insert(0, str(Path("streamlit_app").resolve()))
+sys.path.insert(0, str(Path("src").resolve()))
 model = joblib.load("models/final_model.joblib")
 # X_df = DataFrame with rich feature columns (see models/manifest.json)
 proba = model.predict_proba(X_df)[:, 1]
@@ -129,7 +170,7 @@ proba = model.predict_proba(X_df)[:, 1]
 | [`docs/explain_ml_fe_simple.md`](docs/explain_ml_fe_simple.md) | FE + ML in plain language |
 | [`docs/model_bundler.md`](docs/model_bundler.md) | `XGBBundle` / score-time wrapper |
 | [`docs/why_accuracy_plateau.md`](docs/why_accuracy_plateau.md) | Why accuracy ~0.6 |
-| [`docs/kaggle_notes_vs_accuracy.md`](docs/kaggle_notes_vs_accuracy.md) | Kaggle “anomalies” vs our accuracy experiments |
+| [`docs/kaggle_notes_vs_accuracy.md`](docs/kaggle_notes_vs_accuracy.md) | Kaggle "anomalies" vs our accuracy experiments |
 | [`docs/telecom_column_dictionary.md`](docs/telecom_column_dictionary.md) | Column dictionary |
 
 ---
@@ -140,13 +181,13 @@ proba = model.predict_proba(X_df)[:, 1]
 Client.csv + Record.csv
         │
         ▼
-   EDA (main.ipynb)
+   EDA (notebooks/main.ipynb)
         │
         ▼
    Feature engineering (lean → rich)
         │
         ▼
-   Train / compare models (modeling.ipynb)
+   Train / compare models (notebooks/modeling.ipynb)
         │
         ├─ before: LogReg, Random Forest  → models/before_*.joblib
         └─ after:  tuned XGBoost          → models/final_model.joblib
@@ -159,7 +200,7 @@ Client.csv + Record.csv
 
 ## Tech stack
 
-- Python 3, pandas, matplotlib/seaborn  
+- Python 3.8+, pandas, matplotlib/seaborn  
 - scikit-learn, XGBoost  
 - Jupyter  
 - Streamlit + joblib  
@@ -172,10 +213,22 @@ Client.csv + Record.csv
 2. **Lean features first** — avoid dumping all redundant MOU/revenue windows.  
 3. **Primary metric story** — report accuracy *and* AUC / top-decile lift.  
 4. **Honest ceiling** — ~63% accuracy is expected given class overlap; see the plateau note.  
-5. **Gitignore:** `telecom/` (raw CSVs) and `models/` (large `.joblib` files) are ignored by default — keep them locally; download data from [Kaggle](https://www.kaggle.com/datasets/shenoudasafwat/telecom-customer-churn-100k-cleaned-records) and re-run training/export if cloning a bare repo.
+5. **Gitignore:** `data/telecom/` (raw CSVs) and `models/` (large `.joblib` files) are ignored by default — keep them locally; download data from [Kaggle](https://www.kaggle.com/datasets/shenoudasafwat/telecom-customer-churn-100k-cleaned-records) and re-run training/export if cloning a bare repo.
 
 ---
 
-## License / data
+## Installation
 
-Course-style anonymized telecom extract (“Company A”). Respect any data-protection terms from your instructor; do not redistribute restricted files if your course forbids it.
+### As a package
+
+```bash
+pip install -e .
+```
+
+### Development setup
+
+```bash
+pip install -e ".[dev]"
+```
+
+---

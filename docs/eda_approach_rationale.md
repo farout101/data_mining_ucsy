@@ -76,7 +76,7 @@ We also checked uniqueness and that both sides share the same ID set, so the mer
 
 Missingness decides whether a column is usable, needs imputation, or should be dropped. Telecom demographics often have high null rates; usage fields are usually denser. A side-by-side Client vs Record missing chart Client vs Record missing chartmakes that asymmetry obvious.
 
-![Missing values — Client vs Record](eda_figures/01_missing_values.png)
+![Missing values — Client vs Record](../eda_figures/01_missing_values.png)
 
 **What the figure is for:** rank columns by % missing so preprocessing choices are evidence-based (not guesswork).
 
@@ -94,7 +94,7 @@ Missingness decides whether a column is usable, needs imputation, or should be d
 
 Before choosing metrics or models, you need class balance. If churn were ~5%, accuracy would be a bad headline metric. Here the plot confirms near 50/50 balance, so accuracy is at least interpretable as a starting point.
 
-![Churn distribution](eda_figures/02_churn_distribution.png)
+![Churn distribution](../eda_figures/02_churn_distribution.png)
 
 **What the figure is for:** confirm the outcome is usable and set expectations for baselines (~0.50 if you always predict one class).
 
@@ -116,7 +116,7 @@ Raw means hide skew and outliers. Histograms of revenue, minutes, tenure, equipm
 - whether clipping / log transforms are needed
 - whether “average customer” is a misleading summary
 
-![Key feature distributions](eda_figures/03_feature_distributions.png)
+![Key feature distributions](../eda_figures/03_feature_distributions.png)
 
 **What the figure is for:** understand shape and tails before comparing groups or correlating.
 
@@ -134,7 +134,7 @@ Raw means hide skew and outliers. Histograms of revenue, minutes, tenure, equipm
 
 Business proposals need **interpretable levers** (e.g. equipment age, usage decline), not only black-box importance. Overlaying stayed vs churned distributions is a direct, visual A/B-style check for candidate drivers.
 
-![Feature distributions by churn](eda_figures/04_features_by_churn.png)
+![Feature distributions by churn](../eda_figures/04_features_by_churn.png)
 
 **What the figure is for:** spot shifts between stayers and churners (location, spread, tails).
 
@@ -153,7 +153,7 @@ Business proposals need **interpretable levers** (e.g. equipment age, usage decl
 
 Many Client fields are categorical (`asl_flag`, `creditcd`, handset type, etc.). Segment bars answer: “Does churn concentrate in a product / credit / device subgroup we can target?” A dashed overall rate makes it easy to see who is above/below baseline. Missing values are labeled explicitly so nulls are not invisible.
 
-![Churn rate by categorical segment](eda_figures/05_categorical_churn_rates.png)
+![Churn rate by categorical segment](../eda_figures/05_categorical_churn_rates.png)
 
 **What the figure is for:** find actionable segments, not only continuous predictors.
 
@@ -171,7 +171,7 @@ Many Client fields are categorical (`asl_flag`, `creditcd`, handset type, etc.).
 
 `area` is a natural operations / marketing cut. Even if national churn is ~50%, regional gaps can justify localized retention campaigns or network-quality follow-ups.
 
-![Churn rate by geographic area](eda_figures/06_geographic_churn_rates.png)
+![Churn rate by geographic area](../eda_figures/06_geographic_churn_rates.png)
 
 **What the figure is for:** check whether geography is a useful segmentation axis for the proposal.
 
@@ -193,7 +193,7 @@ With ~100 columns, many revenue/MOU fields are near-duplicates. A correlation he
 2. see which features have any linear association with `churn`
 3. avoid stuffing highly collinear features into a fragile model narrative
 
-![Correlation heatmap](eda_figures/07_correlation_heatmap.png)
+![Correlation heatmap](../eda_figures/07_correlation_heatmap.png)
 
 **What the figure is for:** feature-family awareness and a first pass at churn association (knowing linear `|r|` can be weak even when trees find signal).
 
@@ -211,7 +211,7 @@ With ~100 columns, many revenue/MOU fields are near-duplicates. A correlation he
 
 Single histograms miss interactions. A pairplot of tenure, revenue, minutes, MRC, and equipment age (sampled for speed) checks whether churners occupy a different region of the joint space.
 
-![Pairplot of key metrics by churn](eda_figures/08_pairplot.png)
+![Pairplot of key metrics by churn](../eda_figures/08_pairplot.png)
 
 **What the figure is for:** see joint patterns / overlaps; if classes heavily overlap, a simple rule won’t separate churn alone.
 
@@ -229,7 +229,7 @@ Single histograms miss interactions. A pairplot of tenure, revenue, minutes, MRC
 
 After a join, you should ask: “Do the two tables agree directionally?” Plotting Client lifetime averages (`avgmou`, `avgrev`, `avg3mou`) against Record mean monthly fields checks that the merge is coherent and that short-term vs long-term views are related but not identical.
 
-![Client vs Record usage/revenue sanity checks](eda_figures/09_client_vs_record_sanity.png)
+![Client vs Record usage/revenue sanity checks](../eda_figures/09_client_vs_record_sanity.png)
 
 **What the figure is for:** validate the join and motivate keeping both recent and lifetime features (or choosing one window carefully).
 

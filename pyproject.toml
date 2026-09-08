@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telecom_churn_prediction"
+version = "1.0.0"
+description = "Telecom customer churn prediction project using machine learning"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Myat Mo", email = "farout101@example.com"}
+]
+keywords = ["machine-learning", "churn-prediction", "telecom", "xgboost"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    "pandas>=1.5.0",
+    "numpy>=1.23.0",
+    "matplotlib>=3.6.0",
+    "seaborn>=0.12.0",
+    "scikit-learn>=1.2.0",
+    "xgboost>=1.7.0",
+    "joblib>=1.2.0",
+    "streamlit>=1.15.0",
+    "jupyter>=1.0.0",
+    "notebook>=6.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "isort>=5.10.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100
