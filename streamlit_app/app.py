@@ -17,12 +17,13 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(APP_DIR))
+SRC_DIR = ROOT / "src"
+sys.path.insert(0, str(SRC_DIR))
 
 from model_bundle import engineer_rich_features, lean_feature_frame  # noqa: E402
 
 MODELS_DIR = ROOT / "models"
-DEFAULTS_PATH = APP_DIR / "ui_defaults.json"
+DEFAULTS_PATH = ROOT / "config" / "ui_defaults.json"
 
 MODEL_CHOICES = {
     "Final — XGBoost (after improvement)": MODELS_DIR / "final_model.joblib",
@@ -228,7 +229,7 @@ def main():
     else:
         st.sidebar.write("Accuracy ≈ **58.0%** · AUC ≈ **0.61**")
 
-    tab1, tab2 = st.tabs(["Single customer", "Batch CSV"])
+    tab1, tab2, tab3 = st.tabs(["Single customer", "Batch CSV", "Data Dictionary"])
 
     with tab1:
         row = build_single_row(defaults)
@@ -270,6 +271,150 @@ def main():
                     st.bar_chart(result["risk_band"].value_counts())
                 except Exception as e:
                     st.exception(e)
+
+    with tab3:
+        st.subheader("Dataset Overview")
+        st.write(
+            "The model is trained on two joined CSV files — `Client.csv` (customer profile) "
+            "and `Record.csv` (recent usage + churn label) — merged 1:1 on `Customer_ID`."
+        )
+        st.markdown(
+            "| File | Rows × Cols | Contents |\n"
+            "|------|-------------|----------|\n"
+            "| `Client.csv` | 100,000 × 50 | Account, lifetime usage/billing, demographics, handset |\n"
+            "| `Record.csv` | 100,000 × 51 | Mean monthly usage/billing, call quality, tenure, **churn** |"
+        )
+
+        st.markdown("---")
+        st.subheader("Record.csv — Columns Used in Modelling")
+
+        st.markdown("**Revenue & Overage**")
+        st.dataframe(pd.DataFrame([
+            ("rev_Mean",      "Mean monthly revenue (charge amount)"),
+            ("totmrc_Mean",   "Mean total monthly recurring charge"),
+            ("da_Mean",       "Mean number of directory-assisted calls"),
+            ("ovrmou_Mean",   "Mean overage minutes of use"),
+            ("ovrrev_Mean",   "Mean overage revenue"),
+            ("vceovr_Mean",   "Mean revenue of voice overage"),
+            ("datovr_Mean",   "Mean revenue of data overage"),
+            ("roam_Mean",     "Mean number of roaming calls"),
+            ("change_mou",    "% change in monthly minutes vs previous 3-month average"),
+            ("change_rev",    "% change in monthly revenue vs previous 3-month average"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Call Quality & Completion**")
+        st.dataframe(pd.DataFrame([
+            ("drop_vce_Mean",  "Mean dropped (failed) voice calls"),
+            ("drop_dat_Mean",  "Mean dropped (failed) data calls"),
+            ("blck_vce_Mean",  "Mean blocked (failed) voice calls"),
+            ("blck_dat_Mean",  "Mean blocked (failed) data calls"),
+            ("unan_vce_Mean",  "Mean unanswered voice calls"),
+            ("unan_dat_Mean",  "Mean unanswered data calls"),
+            ("plcd_vce_Mean",  "Mean attempted voice calls placed"),
+            ("plcd_dat_Mean",  "Mean attempted data calls placed"),
+            ("recv_vce_Mean",  "Mean received voice calls"),
+            ("recv_sms_Mean",  "Not documented by provider"),
+            ("comp_vce_Mean",  "Mean completed voice calls"),
+            ("comp_dat_Mean",  "Mean completed data calls"),
+            ("drop_blk_Mean",  "Mean dropped or blocked calls"),
+            ("attempt_Mean",   "Mean attempted calls"),
+            ("complete_Mean",  "Mean completed calls"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Customer Care & Special Call Types**")
+        st.dataframe(pd.DataFrame([
+            ("custcare_Mean",  "Mean customer care calls"),
+            ("ccrndmou_Mean",  "Mean rounded MOU of customer care calls"),
+            ("cc_mou_Mean",    "Mean unrounded MOU of customer care calls"),
+            ("inonemin_Mean",  "Mean inbound calls lasting < 1 minute"),
+            ("threeway_Mean",  "Mean three-way calls"),
+            ("callfwdv_Mean",  "Mean call-forwarding calls"),
+            ("callwait_Mean",  "Mean call-waiting calls"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Minutes of Use**")
+        st.dataframe(pd.DataFrame([
+            ("mou_Mean",         "Mean monthly minutes of use"),
+            ("mou_cvce_Mean",    "Mean unrounded MOU of completed voice calls"),
+            ("mou_cdat_Mean",    "Mean unrounded MOU of completed data calls"),
+            ("mou_rvce_Mean",    "Mean unrounded MOU of received voice calls"),
+            ("owylis_vce_Mean",  "Mean outbound wireless-to-wireless voice calls"),
+            ("mouowylisv_Mean",  "Mean unrounded MOU of outbound wireless-to-wireless voice"),
+            ("iwylis_vce_Mean",  "Not documented; likely inbound wireless-to-wireless voice count"),
+            ("mouiwylisv_Mean",  "Mean unrounded MOU of inbound wireless-to-wireless voice"),
+            ("peak_vce_Mean",    "Mean inbound + outbound peak voice calls"),
+            ("peak_dat_Mean",    "Mean peak data calls"),
+            ("mou_peav_Mean",    "Mean unrounded MOU of peak voice calls"),
+            ("mou_pead_Mean",    "Mean unrounded MOU of peak data calls"),
+            ("opk_vce_Mean",     "Mean off-peak voice calls"),
+            ("opk_dat_Mean",     "Mean off-peak data calls"),
+            ("mou_opkv_Mean",    "Mean unrounded MOU of off-peak voice calls"),
+            ("mou_opkd_Mean",    "Mean unrounded MOU of off-peak data calls"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Outcome & Tenure**")
+        st.dataframe(pd.DataFrame([
+            ("churn",        "Churn between 31–60 days after observation date (0 = stayed, 1 = churned)"),
+            ("months",       "Total months in service"),
+            ("Customer_ID",  "Customer key (join to Client)"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("---")
+        st.subheader("Client.csv — Columns Used in Modelling")
+
+        st.markdown("**Household / Account Flags**")
+        st.dataframe(pd.DataFrame([
+            ("uniqsubs",  "Number of unique subscribers in the household"),
+            ("actvsubs",  "Number of active subscribers in the household"),
+            ("new_cell",  "New cell phone user"),
+            ("crclscod",  "Credit class code"),
+            ("asl_flag",  "Account spending limit flag"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Lifetime & Rolling Billing / Usage**")
+        st.dataframe(pd.DataFrame([
+            ("totcalls",           "Total calls over customer lifetime"),
+            ("totmou",             "Total minutes of use over lifetime"),
+            ("totrev",             "Total revenue"),
+            ("adjrev",             "Billing-adjusted total revenue over lifetime"),
+            ("adjmou",             "Billing-adjusted total minutes over lifetime"),
+            ("adjqty",             "Billing-adjusted total number of calls over lifetime"),
+            ("avgrev",             "Average monthly revenue over lifetime"),
+            ("avgmou",             "Average monthly minutes over lifetime"),
+            ("avgqty",             "Average monthly number of calls over lifetime"),
+            ("avg3mou/qty/rev",    "Avg monthly MOU / calls / revenue over previous 3 months"),
+            ("avg6mou/qty/rev",    "Avg monthly MOU / calls / revenue over previous 6 months"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
+
+        st.markdown("**Geography, Device, Lifestyle**")
+        st.dataframe(pd.DataFrame([
+            ("prizm_social_one",  "Social group letter"),
+            ("area",              "Geographic area"),
+            ("dualband",          "Dual-band handset indicator"),
+            ("refurb_new",        "Handset refurbished (R) or new (N)"),
+            ("hnd_price",         "Current handset price"),
+            ("phones",            "Number of handsets issued"),
+            ("models",            "Number of models issued"),
+            ("hnd_webcap",        "Handset web capability"),
+            ("truck",             "Truck indicator"),
+            ("rv",                "RV indicator"),
+            ("ownrent",           "Home owner / renter status"),
+            ("lor",               "Length of residence"),
+            ("dwlltype",          "Dwelling unit type"),
+            ("marital",           "Marital status"),
+            ("adults",            "Number of adults in household"),
+            ("infobase",          "InfoBase match"),
+            ("income",            "Estimated income"),
+            ("numbcars",          "Known number of vehicles"),
+            ("HHstatin",          "Premier household status indicator"),
+            ("dwllsize",          "Dwelling size"),
+            ("forgntvl",          "Foreign travel dummy"),
+            ("ethnic",            "Ethnicity roll-up code"),
+            ("kid0_2 … kid16_17", "Child present in age band (household)"),
+            ("creditcd",          "Credit card indicator"),
+            ("eqpdays",           "Age (days) of current equipment"),
+            ("Customer_ID",       "Customer key (join to Record)"),
+        ], columns=["Column", "Meaning"]), hide_index=True, use_container_width=True)
 
     st.markdown("---")
     st.caption(
