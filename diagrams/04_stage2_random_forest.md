@@ -60,10 +60,6 @@ flowchart TD
     C --> COMPARE
     C --> IMPORTANCE
     COMPARE --> VERDICT
-
-    style VERDICT fill:#2d6a4f,color:#fff
-    style COMPARE fill:#457b9d,color:#fff
-    style IMPORTANCE fill:#f1faee
 ```
 
 **Key insight from Stage 2:**

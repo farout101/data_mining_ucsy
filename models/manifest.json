@@ -180,6 +180,7 @@
   },
   "how_to_load": {
     "before_rf": "joblib.load('models/before_random_forest_lean.joblib')  # sklearn Pipeline",
-    "final": "joblib.load('models/final_model.joblib')  # XGBBundle with .predict_proba(X_df)"
+    "final": "joblib.load('models/final_model.joblib')  # XGBBundle with .predict_proba(X_df)",
+    "stage4_ensemble": "joblib.load('models/stage4_ensemble.joblib')  # EnsembleBundle with .predict_proba(X_df)"
   }
 }

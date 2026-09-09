@@ -13,6 +13,7 @@ flowchart TD
     G1["Stage 1\nLogistic Regression\nLean features"]
     G2["Stage 2\nRandom Forest\nLean features"]
     G3["Stage 3\nXGBoost Tuned\nRich features"]
+    G4["Stage 4\nEnsemble (XGB+LGB)\nRich features"]
     H["Model Evaluation\nAccuracy · AUC · Lift"]
     I[("💾 Save Models\nmodels/*.joblib")]
     J["Streamlit UI\nstreamlit_app/app.py"]
@@ -26,20 +27,18 @@ flowchart TD
     F --> G1
     F --> G2
     F --> G3
+    F --> G4
     G1 --> H
     G2 --> H
     G3 --> H
+    G4 --> H
     H --> I
     I --> J
     J --> K
-
-    style G3 fill:#2d6a4f,color:#fff,stroke:#1b4332
-    style H fill:#457b9d,color:#fff
-    style J fill:#e76f51,color:#fff
 ```
 
 **Key points:**
 - Both CSV files are joined on `Customer_ID` before any analysis.
 - EDA informs which features to engineer and which to drop.
-- Three model stages are trained on the same 80/20 split for fair comparison.
-- Only the final XGBoost model is deployed in the Streamlit UI.
+- Four model stages are trained on the same 80/20 split for fair comparison.
+- All models (Stages 1 through 4) are selectable in the Streamlit UI, with Stage 4 Ensemble as the top-performing champion.

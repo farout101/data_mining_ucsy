@@ -45,6 +45,50 @@ class XGBBundle:
         return (self.predict_proba(X)[:, 1] >= self.threshold).astype(int)
 
 
+class EnsembleBundle:
+    """Soft-vote ensemble of XGBBundle and LightGBM pipeline. Load with joblib; call predict_proba(X_df)."""
+
+    def __init__(
+        self,
+        xgb_bundle: Any,
+        lgb_preprocessor: Any,
+        lgb_model: Any,
+        lgb_clip_bounds: dict,
+        numeric: list[str],
+        categorical: list[str],
+        weights: list[float] | tuple[float, float] = (0.5, 0.5),
+        threshold: float = 0.5,
+    ):
+        self.xgb_bundle = xgb_bundle
+        self.lgb_preprocessor = lgb_preprocessor
+        self.lgb_model = lgb_model
+        self.lgb_clip_bounds = lgb_clip_bounds
+        self.numeric = list(numeric)
+        self.categorical = list(categorical)
+        self.weights = list(weights)
+        self.threshold = threshold
+
+    def _prepare_lgb(self, X: pd.DataFrame) -> pd.DataFrame:
+        X = X.copy()
+        for col, bounds in self.lgb_clip_bounds.items():
+            lo, hi = bounds
+            if col in X.columns:
+                X[col] = X[col].clip(lo, hi)
+        for col in self.categorical:
+            if col in X.columns:
+                X[col] = X[col].astype("string").fillna("Missing").astype(str)
+        return X[self.numeric + self.categorical]
+
+    def predict_proba(self, X: pd.DataFrame):
+        p_xgb = self.xgb_bundle.predict_proba(X)
+        Xp_lgb = self._prepare_lgb(X)
+        p_lgb = self.lgb_model.predict_proba(self.lgb_preprocessor.transform(Xp_lgb))
+        return self.weights[0] * p_xgb + self.weights[1] * p_lgb
+
+    def predict(self, X: pd.DataFrame):
+        return (self.predict_proba(X)[:, 1] >= self.threshold).astype(int)
+
+
 def engineer_rich_features(df: pd.DataFrame) -> pd.DataFrame:
     """Build rich feature columns from raw Client+Record style fields when possible.
 

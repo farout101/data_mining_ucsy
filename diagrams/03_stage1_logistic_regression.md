@@ -40,10 +40,6 @@ flowchart TD
     C --> RESULTS1
     C --> INTERP
     RESULTS1 --> VERDICT
-
-    style VERDICT fill:#e63946,color:#fff
-    style RESULTS1 fill:#457b9d,color:#fff
-    style INTERP fill:#f1faee
 ```
 
 **Why this stage was not enough:**

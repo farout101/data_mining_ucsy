@@ -49,8 +49,9 @@ flowchart TD
         C3["RF      Rich  → Acc 0.618 · AUC 0.675 · Lift 1.53×"]
         C4["HistGB  Rich  → Acc 0.630 · AUC 0.684 · Lift 1.58×"]
         C5["XGB     Rich  → Acc 0.631 · AUC 0.689 · Lift 1.58×"]
-        C6["XGB Tuned Rich→ Acc 0.633 · AUC 0.689 · Lift 1.58× ✅ FINAL"]
-        C1 --- C2 --- C3 --- C4 --- C5 --- C6
+        C6["XGB Tuned Rich→ Acc 0.633 · AUC 0.689 · Lift 1.58×"]
+        C7["Ensemble (XGB+LGB) Rich → Acc 0.635 · AUC 0.690 · Lift 1.59× 🏆 STAGE 4"]
+        C1 --- C2 --- C3 --- C4 --- C5 --- C6 --- C7
     end
 
     SAVE[("💾 Saved as\nmodels/final_model.joblib\nmodels/after_xgboost_tuned_rich.joblib")]
@@ -61,11 +62,6 @@ flowchart TD
     BEST --> RESULTS3
     RESULTS3 --> ALLCOMP
     RESULTS3 --> SAVE
-
-    style RESULTS3 fill:#2d6a4f,color:#fff
-    style C6 fill:#2d6a4f,color:#fff
-    style SAVE fill:#e76f51,color:#fff
-    style SEARCH fill:#457b9d,color:#fff
 ```
 
 **Total gain from Stage 1 → Stage 3:**

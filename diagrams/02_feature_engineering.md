@@ -41,14 +41,6 @@ flowchart TD
     SELECT --> SPLIT
     SPLIT --> PREP
     PREP --> G
-
-    style D3 fill:#e63946,color:#fff
-    style G fill:#2d6a4f,color:#fff
-    style CLEAN fill:#f1faee
-    style DERIVE fill:#a8dadc,color:#000
-    style SELECT fill:#457b9d,color:#fff
-    style SPLIT fill:#1d3557,color:#fff
-    style PREP fill:#e9c46a,color:#000
 ```
 
 **Lean vs Rich Feature Sets:**
