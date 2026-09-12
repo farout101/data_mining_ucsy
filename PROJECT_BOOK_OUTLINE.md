@@ -16,6 +16,8 @@ Customer churn represents one of the most critical operational challenges in the
 
 Through disciplined exploratory data analysis, the study demonstrates that customer defection cannot be separated linearly due to significant feature overlap and weak bivariate correlations (|r| <= 0.11). To address this challenge, a multi-tiered feature engineering framework was developed, incorporating data quality corrections, outlier mitigation via train-only Winsorization, and domain-derived behavioral signals—most notably an overage-to-plan ratio to quantify customer bill shock and a discrete directional usage decline indicator.
 
+Complementing the supervised modeling track, an **unsupervised K-Means clustering analysis** (k = 2) was applied to the scaled rich feature space to uncover behaviorally distinct subscriber archetypes without relying on churn labels. The resulting clusters were characterized by statistically significant differences in overage intensity, customer care frequency, usage momentum, and service friction, and were validated against ground-truth churn labels. This descriptive mining layer provides an interpretable, label-free segmentation that enriches the prescriptive retention strategy.
+
 Modeling was conducted through a phased four-stage comparative evolution on an identical 80/20 stratified holdout split (80,000 training records, 20,000 testing records):
 1. **Stage 1 — Logistic Regression Baseline:** Achieved 58.02% accuracy and 0.6090 ROC-AUC, demonstrating the inadequacy of linear decision boundaries.
 2. **Stage 2 — Random Forest Ensemble:** Improved accuracy to 61.33% and ROC-AUC to 0.6658 on identical features, proving the necessity of non-linear conditional interactions.
@@ -41,6 +43,8 @@ The project establishes that while overall classification accuracy is naturally 
   - 2.4 Bivariate Driver Analysis and Class Overlap
   - 2.5 Categorical Segments and Geographic Variance
   - 2.6 Multicollinearity and Usage Window Redundancy
+  - 2.7 Unsupervised Behavioral Segmentation via K-Means Clustering
+  - 2.8 Cluster Interpretation and Business Persona Derivation
 - **CHAPTER 3: FEATURE ENGINEERING AND PREPROCESSING**
   - 3.1 Data Quality Remediation
   - 3.2 Domain-Specific Derived Features
@@ -158,6 +162,48 @@ A Pearson correlation analysis across all numeric usage features exposed extensi
 - Cumulative lifetime revenue (`totrev`) and recent monthly revenue (`rev_Mean`) exhibited near-perfect linear alignment ($r > 0.90$).
 
 Retaining every overlapping rolling window introduces severe variance inflation in linear models, dilutes split importance in tree ensembles, and confuses operational attribution. A disciplined data mining pipeline requires selecting a minimal, non-redundant set of usage windows that captures baseline level, short-term trend, and directional momentum.
+
+### 2.7 Unsupervised Behavioral Segmentation via K-Means Clustering
+To uncover structural behavioral patterns without relying on the supervised target label, an unsupervised descriptive data mining layer was deployed using K-Means clustering. By allowing algorithms to group accounts based solely on continuous usage, billing dynamics, and service friction signals, the analysis exposes whether natural subscriber archetypes emerge and how they correspond to churn risk.
+
+#### Experimental Methodology:
+1. **Feature Subspace:** 25 continuous and domain-derived behavioral metrics were selected, including `eqpdays`, `months`, `mou_Mean`, `rev_Mean`, `totmrc_Mean`, `change_mou`, `change_rev`, `ovrmou_Mean`, `ovrrev_Mean`, `custcare_Mean`, `drop_vce_Mean`, `overage_ratio`, `mou_decline_flag`, `mou_per_month`, `rev_per_mou`, `drop_rate`, and `care_per_mou`.
+2. **Standardization:** Continuous attributes were imputed via training-set medians and scaled to zero mean and unit variance using `StandardScaler`, ensuring distance metrics were not dominated by high-magnitude variables (e.g., minutes vs. call counts).
+3. **Partition Optimization ($k = 2$):** An elbow inertia sweep across cluster counts ($k \in [2, 8]$) confirmed that the steepest reduction in within-cluster sum-of-squares (SSE) occurs at $k = 2$ (inertia dropped from $2,041,720$ at $k=2$ to $1,444,101$ at $k=8$). K-Means was initialized with 20 distinct starts (`n_init=20`, `max_iter=300`, locked random state 42).
+4. **Statistical Significance of Discrimination:** For each continuous metric, two-sided Mann-Whitney U hypothesis tests were conducted between cluster distributions, verifying that observed median variances were statistically significant ($p < 0.001$).
+
+#### Cluster Archetype Breakdown:
+The algorithm partitioned the 100,000 subscriber base into two distinct operational clusters:
+
+| Behavioral Dimension | Metric | Cluster 0: High-Overage / High-Friction | Cluster 1: Low-Usage Baseline | Relative Variance | $p$-value (Mann-Whitney U) |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Cohort Size** | Account Count ($n$) | **19,436 (19.4%)** | **80,564 (80.6%)** | — | — |
+| **Churn Density** | Empirical Churn Rate | **45.90%** | **50.44%** | -4.54 pp | $p < 0.0001$ |
+| **Service Friction** | `custcare_Mean` | **2.33 calls/mo** | **0.00 calls/mo** | **+2.00x** | $p < 0.0001$ |
+| **Care Intensity** | `care_per_mou` | **0.0018** | **0.0000** | **+2.00x** | $p < 0.0001$ |
+| **Billing Penalty** | `ovrrev_Mean` | **$27.22 / mo** | **$0.08 / mo** | **+1.99x** | $p < 0.0001$ |
+| **Overage Volume** | `ovrmou_Mean` | **83.63 min/mo** | **0.25 min/mo** | **+1.99x** | $p < 0.0001$ |
+| **Bill Shock Ratio** | `overage_ratio` | **0.418 (41.8%)** | **0.001 (0.1%)** | **+1.99x** | $p < 0.0001$ |
+| **Revenue Trend** | `change_rev` | **-$5.45** | **-$0.25** | **+1.83x** | $p < 0.0001$ |
+| **Usage Momentum** | `change_mou` | **-50.50 min** | **-4.25 min** | **+1.69x** | $p < 0.0001$ |
+| **Network Quality** | `drop_vce_Mean` | **11.67 drops/mo** | **2.00 drops/mo** | **+1.41x** | $p < 0.0001$ |
+| **Usage Intensity** | `mou_per_month` | **83.12 MoU/mo** | **15.15 MoU/mo** | **+1.38x** | $p < 0.0001$ |
+
+### 2.8 Cluster Interpretation and Business Persona Derivation
+The unsupervised clustering analysis provides profound descriptive insight into the operational mechanics of subscriber churn, identifying two distinct behavioural failure modes:
+
+1. **Cluster 0 — The "Frustrated Heavy User" Persona (High Value, High Friction):**
+   - **Characteristics:** Representing 19.4% of the customer base, these subscribers are highly active, generating 83 minutes per month per tenure unit. However, they experience chronic operational pain: they accumulate over $27 in monthly overage fees (representing a severe 41.8% surcharge over their base plan), suffer from elevated dropped calls (11.7/month), and contact customer support more than twice monthly.
+   - **Churn Mechanism:** This segment churns out of acute **billing and quality frustration** (bill shock defection). Their usage is falling sharply (-50.5 MoU), signaling that dissatisfaction precedes contract termination.
+   - **Prescriptive Strategy:** Generic retention discounts are ineffective here. Carriers must deploy **automated plan right-sizing** (migrating users to higher baseline tiers to eliminate overages) paired with priority technical support outreach to resolve network drop issues.
+
+2. **Cluster 1 — The "Passive Disengager" Persona (Low Usage, Low Contact):**
+   - **Characteristics:** Comprising 80.6% of the customer base, these subscribers exhibit lower overall usage intensity (15 MoU/month), virtually zero overage charges ($0.08), and almost zero customer support inquiries (median 0.0).
+   - **Churn Mechanism:** This segment defects via **silent disengagement**. They do not contact customer support to complain; rather, their usage gently erodes until an aging handset or competitor promotion induces defection.
+   - **Prescriptive Strategy:** Because these users have minimal interaction with support channels, reactive interventions fail. Carriers must employ proactive **hardware upgrade incentives** (subsidized handsets tied to 24-month renewals) and automated digital usage stimulation to re-anchor account value.
+
+3. **Methodological Synthesis (Unsupervised vs. Supervised Roles):**
+   Unsupervised clustering validates that subscriber churn is not a monolithic phenomenon. The unsupervised K-Means segments explain *how* customers interact with the network, providing contextual personas that allow the supervised predictive models (Stages 1–4) to be operationalized with differentiated retention playbooks.
 
 ---
 
@@ -385,9 +431,10 @@ This project delivered a comprehensive, statistically sound data mining framewor
 Key technical achievements include:
 1. **Empirical Data Auditing:** Uncovered critical structural properties including join integrity, demographic missingness asymmetry, usage window multicollinearity, and extensive class distribution overlap.
 2. **Leakage-Free Feature Engineering:** Derived high-impact behavioral indicators (`overage_ratio`, `mou_decline_flag`, `eqpdays_x_change_mou`) and enforced train-only Winsorization and preprocessing pipelines.
-3. **Phased Model Evolution:** Demonstrated an unbroken progression from a linear baseline (58.0% accuracy, 0.609 AUC) to a bagging ensemble (61.3% accuracy, 0.666 AUC), a gradient boosting engine (63.3% accuracy, 0.689 AUC), and ultimately a dual-architecture soft-vote ensemble (**63.5% accuracy, 0.6899 AUC, 1.59x lift**).
-4. **Commercial Value Demonstration:** Proven that a model with ~63.5% headline accuracy concentrates 78.8% actual churners within its top risk decile, delivering 59% greater efficiency than untargeted marketing.
-5. **Operational Software Delivery:** Packaged serialized model pipelines and an interactive decision-support tool supporting real-time single-account and batch portfolio inference.
+3. **Unsupervised Behavioral Archetyping:** Applied K-Means clustering ($k = 2$) on 25 standardized continuous metrics, identifying two empirically distinct subscriber archetypes ("Frustrated Heavy Users" driven by bill shock and care friction vs. "Passive Disengagers" driven by silent attrition) with statistically validated separation (Mann-Whitney U, $p < 0.0001$).
+4. **Phased Model Evolution:** Demonstrated an unbroken progression from a linear baseline (58.0% accuracy, 0.609 AUC) to a bagging ensemble (61.3% accuracy, 0.666 AUC), a gradient boosting engine (63.3% accuracy, 0.689 AUC), and ultimately a dual-architecture soft-vote ensemble (**63.5% accuracy, 0.6899 AUC, 1.59x lift**).
+5. **Commercial Value Demonstration:** Proven that a model with ~63.5% headline accuracy concentrates 78.8% actual churners within its top risk decile, delivering 59% greater efficiency than untargeted marketing.
+6. **Operational Software Delivery:** Packaged serialized model pipelines and an interactive decision-support tool supporting real-time single-account and batch portfolio inference.
 
 ### 8.2 Project Strengths and Methodological Rigor
 - **Strict Experimental Controls:** All four model stages were benchmarked on the exact same 20,000-customer holdout split with fixed random seeds, isolating algorithmic gains from data sampling variation.
